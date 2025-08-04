@@ -27,12 +27,15 @@ const createContact = async (req, res) => {
         lastName: req.body.lastName,
         email: req.body.email,
         favoriteColor: req.body.favoriteColor,
-        birthday: req.body.birthday
+        birthday: req.body.birthday,
+        username: req.body.username,
+        name: req.body.name,
+        ipAddress: req.body.ipAddress
     };
-      const response = await mongodb.getDatabase().db().collection('contacts').insertOne(contact);
-       if (response.acknowledged) {
+    const response = await mongodb.getDatabase().db().collection('contacts').insertOne(contact);
+    if (response.acknowledged) {
         res.status(204).send();
-    }  else {
+    } else {
         res.status(500).json(response.error || 'Some error occurred while creating the contact.');
     }
 };
@@ -40,16 +43,19 @@ const createContact = async (req, res) => {
 const updateContact = async (req, res) => {
     //swagger.tags=['Contacts']
     const contactId = new ObjectId(req.params.id);
-    const contact = {
+    const contactUpdates = {
         username: req.body.username,
-        email:req.body.email,
+        email: req.body.email,
         name: req.body.name,
-        ipaddress: req.body.ipaddress
+        ipAddress: req.body.ipAddress
     };
-      const response = await mongodb.getDatabase().db().collection('contacts').replaceOne({ _id: contactId }, contact);
-       if (response.modifiedCount > 0) {
+    const response = await mongodb.getDatabase().db().collection('contacts').updateOne(
+        { _id: contactId },
+        { $set: contactUpdates }
+    );
+    if (response.modifiedCount > 0) {
         res.status(204).send();
-    }  else {
+    } else {
         res.status(500).json(response.error || 'Some error occurred while updating the contact.');
     }
 };
